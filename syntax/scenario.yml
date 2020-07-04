@@ -1,0 +1,83 @@
+scenario: describe here what you want to test, max. 128 characters
+
+before:
+
+  "#1 setup task":
+    link: an optional python doc-string or function name (if not given take object key "#1 prepare scenario"
+    input:
+      param1: value1
+      param2: value2
+    output:
+      param3:
+        store: key3
+
+  "#2 setup task with import":
+    import:
+      step: "#2 test"
+      from: "tests/tc_01_abc.yaml"
+#    input:
+#      param1: value1
+
+after:
+
+  "#1 teardown task": null
+
+steps:
+
+  "#1 test step":
+    link: "python doc-string or function name"
+    tags: REGRESSION, SMOKE-TEST
+    skip: "any reason why test is skipped"
+    before:
+      "#1 test step setup":
+        input:
+          param: value
+    after:
+      "#1 test step teardown": null
+    input:
+      id:
+        env: key
+      file:
+        file: file.json
+      var:
+        store: key
+      param:
+        assign: value
+    output:
+      status: 200
+      string:
+        equal: xyz
+      number:
+        equal: 1
+        store: key
+      list:
+        equal:
+          - 1
+          - 2
+          - 3
+      list2: [1, 2, 3]
+      $:
+        schema: schema.yaml
+      $.data: "..."
+
+  "#2 test step with loop":
+    foreach:
+      env: ids
+    input:
+      id: null
+      param2: 1
+    output:
+      status: 200
+      data:
+        equal: []
+
+  "#3 step with when":
+    when:
+      key3: "..."
+
+  "#4 test step with import":
+    import:
+      step: "name of step to import"
+      from: "from-this-file"
+
+  # "#5 step without body": null

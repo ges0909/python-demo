@@ -1,0 +1,1 @@
+DEBUG:test_decorator:action 'simple': << args={'ids': [1, 2, 3]}, env={}, props={}, item={}

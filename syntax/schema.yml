@@ -1,0 +1,184 @@
+$schema: http://json-schema.org/schema#
+$id: http://syrocon.de/schemas/pytest-yaml.json
+type: object
+additionalProperties: false
+properties:
+
+  scenario:
+    $ref: "#/definitions/string128"
+
+  issues:
+    $ref: "#/definitions/string64_array"
+
+  before:
+    $ref: "#/definitions/before"
+
+  after:
+    $ref: "#/definitions/after"
+
+  steps:
+
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-zA-Z0-9_# ]{1,128}$": # object key => step comment => test name
+        oneOf:
+          - $ref: "#/definitions/import"
+          - $ref: "#/definitions/step"
+
+definitions:
+
+  before:
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-zA-Z0-9_# ]{1,128}$":
+        oneOf:
+          - type: "null"
+          - oneOf:
+              - $ref: "#/definitions/import"
+              - $ref: "#/definitions/call"
+
+  after:
+    $ref: "#/definitions/before"
+
+  import:
+    type: object
+    additionalProperties: false
+    properties:
+      import:
+        type: object
+        additionalProperties: false
+        properties:
+          step:
+            $ref: "#/definitions/string128"
+          from:
+            $ref: "#/definitions/file_path"
+
+  call:
+    type: object
+    additionalProperties: false
+    properties:
+      link:
+        type: string
+      input:
+        $ref: "#/definitions/input"
+      output:
+        $ref: "#/definitions/output"
+
+  step:
+    type: object
+    additionalProperties: false
+    properties:
+      link:  # optional mapping to python doc-string or function name
+        $ref: "#/definitions/string128"
+      when:
+        type: object
+      skip:
+        $ref: "#/definitions/string128" # reason to skip
+      tags:
+        $ref: "#/definitions/tags" # comma-separated list of markers
+      before:
+        $ref: "#/definitions/before"
+      after:
+        $ref: "#/definitions/after"
+      foreach:
+        type: object
+      input:
+        $ref: "#/definitions/input"
+      output:
+        $ref: "#/definitions/output"
+    propertyOrder:
+      - link
+      - before
+      - after
+      - foreach
+      - input
+      - output
+
+  input:
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-zA-Z0-9_]{1,64}$": # input parameter name
+        oneOf:
+          - type: "null"
+          - type: string
+          - type: number
+          - type: boolean
+          - type: array
+          - $ref: "#/definitions/input_operators"
+
+  input_operators:
+    type: object
+    additionalProperties: false
+    properties:
+      env:
+        type: string
+      file:
+        type: string
+      store:
+        type: string
+      assign:
+        $ref: "#/definitions/scalar"
+
+  output:
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "^[a-zA-Z0-9_.$]{1,64}$": # output parameter name, incl. '.' and '$'
+        oneOf:
+          - type: string
+          - type: number
+          - type: boolean
+          - type: array
+          - $ref: "#/definitions/output_operators"
+
+  output_operators:
+    type: object
+    additionalProperties: false
+    properties:
+      equal:
+        $ref: "#/definitions/scalar"
+      store:
+        type: string
+      schema:
+        type: string
+
+  string128:
+    type: string
+    minLength: 1
+    maxLength: 128
+    pattern: "^[a-zA-Z0-9-_. #,()]+$"
+
+  file_path:
+    type: string
+    minLength: 1
+    maxLength: 256
+    pattern: "^[a-zA-Z0-9-_./]+$"
+
+  tags:
+    type: string
+    minLength: 1
+    maxLength: 128
+    pattern: "^[a-zA-Z0-9-_]+[, a-zA-Z0-9-_]*$"
+
+  string64_array:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      $ref: "#/definitions/string64"
+
+  string64:
+    type: string
+    minLength: 1
+    maxLength: 64
+    pattern: "^[a-zA-Z0-9-_]+$"
+
+  scalar:
+    oneOf:
+      - type: string
+      - type: number
+      - type: boolean
+      - type: array
