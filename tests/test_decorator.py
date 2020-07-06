@@ -100,7 +100,5 @@ def test_groupby():
     l = [{"status": 1, "letter": "a"}, {"status": 2, "letter": "b"}, {"status": 3, "letter": "c"}]
     results = []
     for key, group in groupby(l, lambda d: list(d.keys())[0]):
-        for g in group:
-            pass
         results.append({key: [list(g.values())[0] for g in group]})
     assert results == [{"status": [1, 2, 3]}, {"letter": ["a", "b", "c"]}]
