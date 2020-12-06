@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 from pykeepass import PyKeePass
-from pykeepass.exceptions import CredentialsIntegrityError
+from pykeepass.exceptions import CredentialsError
 
 
 @pytest.fixture
@@ -98,5 +98,5 @@ def test_load_unknown_database_file():
 
 
 def test_wrong_master_password(path):
-    with pytest.raises(CredentialsIntegrityError):
+    with pytest.raises(CredentialsError):
         _ = PyKeePass(path, password="wrong")
